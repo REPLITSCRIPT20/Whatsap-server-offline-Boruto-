@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Messaging</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>WhatsApp Messaging</h1>
+
+    <label>Upload creds.json</label>
+    <input type="file" id="credsFile" />
+    <button onclick="uploadCreds()">Upload & Start Session</button>
+
+    <label>Enter Target Numbers (comma-separated)</label>
+    <input type="text" id="numbers" placeholder="Ex: 1234567890, 0987654321" />
+
+    <label>Enter Message</label>
+    <textarea id="message" placeholder="Type your message here..."></textarea>
+
+    <label>Enter Delay (seconds)</label>
+    <input type="number" id="delay" placeholder="Delay Time" />
+
+    <button onclick="sendMessage()">Send Messages</button>
+
+    <script>
+        async function uploadCreds() {
+            const fileInput = document.getElementById('credsFile').files[0];
+            if (!fileInput) return alert("Please select a creds.json file!");
+
+            const formData = new FormData();
+            formData.append("creds", fileInput);
+
+            const response = await fetch('/upload-creds', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+            alert(result.message || result.error);
+        }
+
+        async function sendMessage() {
+            const numbers = document.getElementById('numbers').value;
+            const message = document.getElementById('message').value;
+            const delay = document.getElementById('delay').value;
+
+            const response = await fetch('/send-message', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ numbers, message, delay: Number(delay) })
+            });
+
+            const result = await response.json();
+            alert(result.message || result.error);
+        }
+    </script>
+</body>
+</html>
